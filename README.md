@@ -59,7 +59,12 @@ print("Individuals making more than $50,000: {}".format(n_greater_50k))
 print("Individuals making at most $50,000: {}".format(n_at_most_50k))
 print("Percentage of individuals making more than $50,000: {}".format(greater_percent))
 ```
-
+```
+Total number of records: 45222
+Individuals making more than $50,000: 11208
+Individuals making at most $50,000: 34014
+Percentage of individuals making more than $50,000: 24.78%
+```
 
 ```python
 print(data.shape,"\n")
@@ -95,7 +100,7 @@ vis4 = sns.distplot(data["capital-gain"],bins=10, ax=ax[1][1])
 vis5 = sns.jointplot(data = data, x = "age", y = "education-num", kind='kde') #here kde means kernel density plots
 ```
 <p align="center"><img src="/img/1.png?raw=true"/></p>
-<p align="center"><img src="/img/2.ong?raw=true"/></p>
+<p align="center"><img src="/img/2.png?raw=true"/></p>
 ** Featureset Exploration **
 
 * **age**: continuous. 
@@ -165,15 +170,19 @@ features_log_minmax_transform[numerical] = scaler.fit_transform(features_log_tra
 display(features_log_minmax_transform.head(n = 5))
 ```
 
+|   | age | workclass | `education_level` | education-num | marital-status | occupation | relationship | race |	sex | capital-gain | capital-loss |	hours-per-week | native-country |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 0 |	0.301370 | State-gov | Bachelors | 0.800000 | Never-married | Adm-clerical | Not-in-family | White | Male | 0.667492 | 0.0 | 0.397959 | United-States |
+
 ### Implementation: Data Preprocessing
 
 From the table in **Exploring the Data** above, we can see there are several features for each record that are non-numeric. Typically, learning algorithms expect input to be numeric, which requires that non-numeric features (called *categorical variables*) be converted. One popular way to convert categorical variables is by using the **one-hot encoding** scheme. One-hot encoding creates a _"dummy"_ variable for each possible category of each non-numeric feature. For example, assume `someFeature` has three possible entries: `A`, `B`, or `C`. We then encode this feature into `someFeature_A`, `someFeature_B` and `someFeature_C`.
 
 |   | someFeature |                    | someFeature_A | someFeature_B | someFeature_C |
-| :-: | :-: |                            | :-: | :-: | :-: |
-| 0 |  B  |  | 0 | 1 | 0 |
+| --- | --- |              ---           | --- | --- | --- |
+| 0 |  B  |   | 0 | 1 | 0 |
 | 1 |  C  | ----> one-hot encode ----> | 0 | 0 | 1 |
-| 2 |  A  |  | 1 | 0 | 0 |
+| 2 |  A  |   | 1 | 0 | 0 |
 
 Additionally, as with the non-numeric features, we need to convert the non-numeric target label, `'income'` to numerical values for the learning algorithm to work. Since there are only two possible categories for this label ("<=50K" and ">50K"), we can avoid using one-hot encoding and simply encode these two categories as `0` and `1`, respectively. In code cell below, you will need to implement the following:
 
@@ -313,30 +322,6 @@ List three of the supervised learning models above that are appropriate for this
 
 Structure your answer in the same format as above^, with 4 parts for each of the three models you pick. Please include references with your answer.
 
-**Answer:** 
-
-**Adaboost**
-
-1. AdaBoost has seen real-world applications in traffic sign recognition. ([link](http://www.maia.ub.es/~sergio/files/Transport09.pdf))
-2. Since it uses a combination of stumps (single-node decision trees). It is very resistant to overfitting. So it performs well on most datasets. 
-3. It performs poorly when there are too few training samples or when there are big outliers.
-4. Given the size of our dataset and the lack of outliers, we should not have any risk of overfitting our model nor of having our results distorted from outliers. 
-
-**Support Vector Machines**
-
-1. In the real-world, SVMs are used for face detection. ([link](https://papers.nips.cc/paper/1609-support-vector-machines-applied-to-face-recognition.pdf))
-2. It can separate non-linear data by plotting them in higher dimensions and using a hyperplane as a boundary. It performs well when there are only two classes to separate and when they are balanced.
-3. The model doesn’t perform well on highly skewed or extremely unbalanced data. In other words, if the number of samples one class far outnumber those of the other class. A relatively small number of mislabeled samples can drastically decrease performance.
-4. SVM models are good candidates here because we have a classification problem on a large sample of labeled data. While unbalanced, the overall performance of the model should not be impeded since a little over 75% of our sample have a yearly income of over 50k.
-
-**Random Forests**
-
-1. Random forests have been used in the banking sector to predict customer loyalty.([link](https://pdfs.semanticscholar.org/5919/b50392c52450269f02ee892f024f7615661e.pdf))
-2. Non-linear relationships between features shouldn’t affect the performance of the model. This model averages several decision trees using varying features of data. The approach improves predictive accuracy and controls over-fitting.
-3. They are very time and resource intensive. They are also difficult to interpret.
-4. We don’t have to worry about any non-linear relationships between the features.
-
-
 ### Implementation - Creating a Training and Predicting Pipeline
 To properly evaluate the performance of each model you've chosen, it's important that you create a training and predicting pipeline that allows you to quickly and effectively train models using various sizes of training data and perform predictions on the testing data. Your implementation here will be used in the following section.
 In the code block below, you will need to implement the following:
@@ -474,10 +459,6 @@ Look at the graph at the bottom left from the cell above(the visualization creat
 * prediction/training time
 * the algorithm's suitability for the data.
 
-**Answer:**
-
-At 0.7246, the AdaBoost model has the highest F-score on the test set when trained on 100% of the training data. The F-score is an evaluation metric that combines precision and recall. It only took 2.2 seconds for training and 0.12 seconds for predicting. Given the size of our dataset and the lack of outliers, we should not have any risk of overfitting our model nor of having our results distorted from outliers. This makes AdaBoost suitable for our data.
-
 ### Question 4 - Describing the Model in Layman's Terms
 
 * In one to two paragraphs, explain to *CharityML*, in layman's terms, how the final model chosen is supposed to work. Be sure that you are describing the major qualities of the model, such as how the model is trained and how the model makes a prediction. Avoid using advanced mathematical jargon, such as describing equations.
@@ -485,16 +466,6 @@ At 0.7246, the AdaBoost model has the highest F-score on the test set when train
 ** HINT: **
 
 When explaining your model, if using external resources please include all citations.
-
-**Answer:**
-
-The Adaboost model is a boosting ensemble method. In short, an ensemble method is a probability distribution for the state of the system ([link](https://en.wikipedia.org/wiki/Statistical_ensemble_(mathematical_physics)). It works by combining multiple "weak learners" to create one strong model. While each weak learner used is better at classifying the data than random chance, they are still individually weak. However, it's the combination of all of these independent weak learning models that makes the Adaboost model better equipped to make accurate predictions. Also, various types and complexities of weak learners can be used.
-
-This algorithm is trained iteratively. At first, each point will have the same weight assigned to it and the model tries to maximize the sum of each class on either side of a boundary. After the first classification, it punishes any misclassified points by increasing their weights. A new boundary is drawn to separate the data based on the newly assigned weights, and again the newly misclassified points are punished by having their weights increased.
-
-Then the boundaries are combined to create sections on the hyperplane. The weights are then used in each section to find if it should be classified as the territory of one class or the other. 
-
-A prediction is made based on which territory the new data point will reside.
 
 ### Implementation: Model Tuning
 Fine tune the chosen model. Use grid search (`GridSearchCV`) with at least one important parameter tuned with at least 3 different values. You will need to use the entire training set for this. In the code cell below, you will need to implement the following:
@@ -577,10 +548,6 @@ Final F-score on the testing data: 0.7396
 | F-score        |         0.7246          |   0.7396       |
 
 
-**Answer:**
-
-The optimized model has achieved a marginally better result than the unoptimized model. The optimized model has an accuracy score of 0.8651 and an F-score of 0.7396. However, the optimized model performed far better than the naive model which had an accuracy and F-score of 0.2478 and 0.2917 respectively.
-
 ----
 ## Feature Importance
 
@@ -590,22 +557,6 @@ Choose a scikit-learn classifier (e.g., adaboost, random forests) that has a `fe
 
 ### Question 6 - Feature Relevance Observation
 When **Exploring the Data**, it was shown there are thirteen available features for each individual on record in the census data. Of these thirteen records, which five features do you believe to be most important for prediction, and in what order would you rank them and why?
-
-**Answer:**
-
-Judging by the exploratory analysis that was performed, I believed that the following five features would have the biggest impact on the outcome (in order of importance):
-
- 1. Capital gain
- 2. Age
- 3. Occupation
- 4. Education-num
- 5. Workclass
-
-I expected people with enough savings to have capital gains to be making a lot more money than people without any capital gain. This variable wouldn't be creating the level of income, but it would be an indication of wealth.
-
-Older people have spent more time in the workforce and should be more likely to have higher income levels given their experiences.
-
-The last three should work the same way where certain types of work and years of education should be indicative of a person's earning potential.
 
 ### Implementation - Extracting Feature Importance
 Choose a `scikit-learn` supervised learning algorithm that has a `feature_importance_` attribute availble for it. This attribute is a function that ranks the importance of each feature when making predictions based on the chosen algorithm.
@@ -637,10 +588,6 @@ Observe the visualization created above which displays the five most relevant fe
 * How do these five features compare to the five features you discussed in **Question 6**?
 * If you were close to the same answer, how does this visualization confirm your thoughts? 
 * If you were not close, why do you think these features are more relevant?
-
-**Answer:**
-
-I guessed three of the five features correctly. I believe I was more concerned with the features causing wealth rather than being indications or correlations with wealth. So of course, the more hours you work per week, the more money you will make. Being married is correlated with age too, since married people are usually older. However, I wasn't expecting the impact of these two variables on income to be this important. 
 
 ### Feature Selection
 How does a model perform if we only use a subset of all the available features in the data? With less features required to train, the expectation is that training and prediction time is much lower — at the cost of performance metrics. From the visualization above, we see that the top five most important features contribute more than half of the importance of **all** features present in the data. This hints that we can attempt to *reduce the feature space* and simplify the information required for the model to learn. The code cell below will use the same optimized model you found earlier, and train it on the same training set *with only the top five important features*. 
@@ -682,10 +629,3 @@ F-score on testing data: 0.7066
 
 * How does the final model's F-score and accuracy score on the reduced data using only five features compare to those same scores when all features are used?
 * If training time was a factor, would you consider using the reduced data as your training set?
-
-**Answer:**
-
-The reduced model only used the top 5 important features and achieved an accuracy of 0.8484 and an F-score of 0.7066. As opposed to an accuracy and F-score of 0.8651 and 0.7396 respectively on the full data. Had there been a significant reduction in training time, I would definitely consider utilizing the feature selection functionality.
-
-> **Note**: Once you have completed all of the code implementations and successfully answered each question above, you may finalize your work by exporting the iPython Notebook as an HTML document. You can do this by using the menu above and navigating to  
-**File -> Download as -> HTML (.html)**. Include the finished document along with this notebook as your submission.
